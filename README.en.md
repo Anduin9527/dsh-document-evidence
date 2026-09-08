@@ -1,64 +1,54 @@
-# Document Evidence for DeepSeek Harness
+# Document Library for DeepSeek Harness
 
-[中文](README.md) · English
+Ask questions about your PDFs and follow each citation back to the source page, right inside dsh Web.
 
-A native dsh Web plugin for a project PDF library, bounded evidence retrieval, page images and source citations. Select documents per conversation; click citations to open the original page beside the conversation.
+[中文](README.md) · [Configuration](docs/configuration.md) · [Changelog](CHANGELOG.md)
+
+![Citation opening the original PDF page beside the conversation](docs/assets/citation.png)
+
+*Actual UI capture using a sample manual and a local protocol test model.*
+
+## Features
+
+- A project PDF library shared across sessions, with a separate document selection for each conversation.
+- Background indexing with progress, page coverage, stop and resume controls.
+- Source retrieval, neighboring-page reading and clickable page citations.
+- Page images for charts and scanned content through your existing dsh vision model.
+- Native tool cards showing candidates, excerpts, timing and status.
 
 ## Install
 
-Beta `0.2.0-beta.9`. Tested with the npm release of `@deepseek-ai/dsh@0.1.3-alpha.2` on macOS arm64. Requires a supported Node.js version (`^22.19.0 || >=24.0.0`) and Python 3.10+ with venv. Linux, Windows and other dsh versions have not completed native Web validation.
-
-Obtain the versioned tarball from the maintainer, then run:
+Requires dsh Web, Node.js 22.19+ on the 22.x line or 24+, and Python 3.10+ with venv. Verified with `@deepseek-ai/dsh@0.1.3-alpha.2` on macOS arm64.
 
 ```sh
-dsh plugin --profile web add /absolute/path/dsh-document-evidence-0.2.0-beta.9.tgz
+dsh plugin --profile web add github:Anduin9527/dsh-document-evidence
 dsh plugin --profile web exec dsh-document-evidence-setup
 dsh web
 ```
 
-Setup installs PyMuPDF 1.28.2 into a plugin-specific Python environment. It needs package-index access but does not change model settings. The plugin uses the model and credentials already configured in dsh. Page-image reading and visual indexing require a model that declares image input support.
+Restart dsh if it is already running. Setup creates a dedicated Python environment and installs PyMuPDF. The plugin uses your existing dsh model configuration; no additional API key is needed. Image reading requires a model with image input support.
 
-Upload a PDF and send the message. Open the conversation's Document Library, confirm adding the file, and select the documents to query. Indexing progress and coverage remain visible. Click a supplied citation to inspect its physical page and any located text.
+## Use
 
-## Evidence and privacy
+1. Upload a PDF in a project conversation and open **资料库** (Library).
+2. Confirm that it should be added and indexed, or choose a project PDF.
+3. Select the documents to search and ask your question.
+4. Click a citation to open the original page and highlight its text.
 
-- Reuses local immutable PDF snapshots and lexical page indexes across conversations within a project. Conversation selections remain separate.
-- `library_retrieve` combines candidate search, bounded original excerpts and citation location. `library_expand` reads selected pages and optional neighbors; `library_read_page` can supply page images.
-- Exact repeated evidence can reference earlier visible text or images. Native session replacements preserve original records; missing references are restored from exact archived content after compaction. Set `reuseVisibleEvidence: false` to disable this optimization.
-- PDF snapshots, indexes and model-authored page notes are local. Background summaries/visual notes and agent answers send the relevant excerpts or images to your configured model service and consume its quota.
-- Search is lexical, not exhaustive. Page notes are model-authored discovery aids. A citation locates evidence; it does not verify the model's interpretation. Scans without a usable text layer fall back to page-level navigation.
-- Single-host cache writes only. Do not run multiple dsh hosts against the same library cache. Citation URLs work inside dsh with this plugin, not as public document links.
+Try: “Compare revenue for the same year across these two reports. Check the units and cite each source.”
 
-## Configuration
+<img src="docs/assets/library.png" alt="Sample manual in the document library with index progress" width="358">
 
-Override the plugin in `$DSH_HOME/profiles/web/cordis.patch.yml`:
+The library supports filename search, document selection and index progress. Page citations support navigation and zoom; scanned pages use page-level navigation when no text coordinates are available.
 
-```yaml
-- id: document-evidence
-  config:
-    python: /absolute/path/to/python
-    cacheDir: /absolute/path/to/document-evidence
-    reuseVisibleEvidence: true
-```
+## Data and models
 
-Default storage: `$DSH_HOME/data/document-evidence` (otherwise `~/.dsh/data/document-evidence`). Defaults include 100 MiB and 2,000 pages per PDF. Restart dsh after changes. See the Chinese README for all limits and tools.
+PDF snapshots and indexes stay local. Summaries, visual page cards and answers send the required excerpts or page images to your configured dsh model service and consume its usage. The default data directory is `~/.dsh/data/document-evidence`, or under `DSH_HOME` when set.
 
-## Validation
+## More
 
-Protocol checks, real PDF/vision case studies and actual provider token measurements have been performed. A controlled request decreased input from 27,697 to 26,760 tokens (3.38%). Local warm retrieval median decreased from 1,544 to 359 ms with identical evidence. One free-running follow-up finished in 28.5 rather than 41.1 seconds; this is not a general speed guarantee. Cache misses and first-token latency did not improve in that case. Model interpretation errors remain.
-
-## Development and removal
-
-```sh
-npm ci --ignore-scripts
-PDF_EVIDENCE_TEST_PYTHON=/path/to/python npm test
-/path/to/python test/worker_test.py
-npm run check:release
-npm pack
-```
-
-Tests use synthetic documents and do not require model credentials. To uninstall, run `dsh plugin --profile web remove dsh-document-evidence` and restart dsh. Local library data is retained so old evidence is not silently destroyed.
+[Configuration and development](docs/configuration.md) · [Performance measurements](docs/optimization-beta8.md) · [Issues](https://github.com/Anduin9527/dsh-document-evidence/issues) · [Contributing](CONTRIBUTING.md)
 
 ## License
 
-AGPL-3.0-only; see [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md). Dependencies retain their own terms. No commercial PyMuPDF license is granted by this package.
+[AGPL-3.0-only](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md).

@@ -28,7 +28,9 @@
     "CHANGELOG.md",
     "THIRD_PARTY_NOTICES.md",
     "LICENSE",
-    "docs/optimization-beta8.md"
+    "docs/optimization-beta8.md",
+    "docs/configuration.md",
+    "docs/assets"
   ],
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
