@@ -21,7 +21,7 @@ Ask questions about your PDFs and follow each citation back to the source page, 
 Requires dsh Web, Node.js 22.19+ on the 22.x line or 24+, and Python 3.10+ with venv. Verified with `@deepseek-ai/dsh@0.1.3-alpha.2` on macOS arm64.
 
 ```sh
-dsh plugin --profile web add github:Anduin9527/dsh-document-evidence
+dsh plugin --profile web add dsh-document-evidence@beta
 dsh plugin --profile web exec dsh-document-evidence-setup
 dsh web
 ```

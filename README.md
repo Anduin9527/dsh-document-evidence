@@ -21,7 +21,7 @@
 需要 dsh Web、Node.js 22.19+（22 系列）或 24+，以及 Python 3.10+（含 venv）。已验证宿主为 `@deepseek-ai/dsh@0.1.3-alpha.2`，运行环境为 macOS arm64。
 
 ```sh
-dsh plugin --profile web add github:Anduin9527/dsh-document-evidence
+dsh plugin --profile web add dsh-document-evidence@beta
 dsh plugin --profile web exec dsh-document-evidence-setup
 dsh web
 ```
