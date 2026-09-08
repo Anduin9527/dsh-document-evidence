@@ -33,6 +33,18 @@ test('native library mount preserves shared RPC, accepts only trusted confirmed 
   const fiber = await ctx.plugin(Plugin, { python, cacheDir: join(folder, 'cache') })
   t.after(async () => { await ctx.fiber.dispose(); await rm(folder, { recursive: true, force: true }) })
   assert.ok(route)
+  // The default native plugin supplies the output contract before any user/tool call;
+  // it must not depend on the optional standalone tools or a user asking for links.
+  const sections = (await ctx.systemPrompt.assemble()).sections
+  const citations = sections.find(section => section.name === 'document-library-citations')
+  assert.ok(citations)
+  assert.match(citations.text, /including the first answer and follow-up answers/)
+  assert.match(citations.text, /The user does not need to request citations/)
+  assert.match(citations.text, /\[文档名 · 第 N 页\]\(citation URL returned by the tool\)/)
+  assert.ok(!sections.some(section => section.name === 'document-evidence'))
+  for (const tool of ctx.tools.schemas().filter(tool => ['library_retrieve', 'library_expand', 'library_read_page', 'library_cite'].includes(tool.name))) {
+    assert.match(tool.description, /clickable Markdown link beside the supported claim/)
+  }
   assert.deepEqual(ctx.tools.schemas().map(tool => tool.name).sort(), ['library_cite', 'library_expand', 'library_list', 'library_read_page', 'library_retrieve', 'library_search'])
   const rpc = async (operation, args = {}, sessionId = 's1') => {
     const response = await route.fetch(new Request('http://localhost/api/documentEvidence/action', {
@@ -51,7 +63,12 @@ test('native library mount preserves shared RPC, accepts only trusted confirmed 
   assert.equal((await rpc('page', { id, page: 1, image: false }, 's2')).ok, false)
   const call = (name, args) => ctx.tools.execute({ callId: crypto.randomUUID(), name, arguments: args, agent, signal: new AbortController().signal })
   assert.equal((await call('library_cite', { id, page: 1, quote: 'Change is -112' })).isError, true)
-  assert.equal((await call('library_read_page', { id, page: 1, image: false })).isError, false)
+  const firstPage = await call('library_read_page', { id, page: 1, image: false })
+  assert.equal(firstPage.isError, false)
+  const modelPage = JSON.parse(firstPage.content[0].text)
+  assert.equal(modelPage.name, 'manual.pdf')
+  assert.equal(modelPage.citation, firstPage.value.citation)
+  assert.match(modelPage.citation, /^https:\/\/dsh-document-evidence\.invalid\/[a-f0-9]{64}\/1\?quote=$/)
   assert.equal((await call('library_read_page', { id, page: '1', image: false })).isError, false)
   for (const page of ['1.5', '1e0', '-1', '9007199254740993', {}, null]) assert.equal((await call('library_read_page', { id, page, image: false })).isError, true)
   const listed = await call('library_list', {})
@@ -126,5 +143,6 @@ p=fitz.open(sys.argv[1]); p.set_metadata({'title':'Second independent document'}
   assert.equal((await call('library_cite', { id, page: 1, quote: 'Change is -112' })).isError, true)
   await fiber.dispose()
   assert.equal(route, undefined)
+  assert.ok(!(await ctx.systemPrompt.assemble()).sections.some(section => section.name === 'document-library-citations'))
   assert.equal(ctx.tools.schemas().length, 0)
 })

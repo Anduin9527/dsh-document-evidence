@@ -35,7 +35,9 @@ Restart dsh if it is already running. Setup creates a dedicated Python environme
 3. Select the documents to search and ask your question.
 4. Click a citation to open the original page and highlight its text.
 
-Try: “Compare revenue for the same year across these two reports. Check the units and cite each source.”
+The plugin instructs the agent to include clickable sources in PDF-based answers automatically; you do not need to ask for citations.
+
+Try: “Compare revenue for the same year across these two reports. Check the units.”
 
 <img src="docs/assets/library.png" alt="Sample manual in the document library with index progress" width="358">
 

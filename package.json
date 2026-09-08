@@ -1,6 +1,6 @@
 {
   "name": "dsh-document-evidence",
-  "version": "0.2.0-beta.9",
+  "version": "0.2.0-beta.10",
   "description": "Project PDF library with background indexing and cited page highlights for DeepSeek Harness Web",
   "type": "module",
   "main": "index.js",
