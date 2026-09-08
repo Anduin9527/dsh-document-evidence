@@ -1,0 +1,91 @@
+{
+  "name": "dsh-document-evidence",
+  "version": "0.2.0-beta.9",
+  "description": "Project PDF library with background indexing and cited page highlights for DeepSeek Harness Web",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "bridge.js",
+    "schemas.js",
+    "instructions.js",
+    "library.js",
+    "host-library.js",
+    "client.js",
+    "python/worker.py",
+    "requirements.txt",
+    "cordis.patch.yml",
+    "README.md",
+    "setup.mjs",
+    "retrieval.js",
+    "evidence-context.js",
+    "README.en.md",
+    "CHANGELOG.md",
+    "THIRD_PARTY_NOTICES.md",
+    "LICENSE",
+    "docs/optimization-beta8.md"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-chat",
+        "@deepseek-ai/dsh-client-ui-session",
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-ui-tool"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check:release": "node scripts/check-release.mjs",
+    "prepublishOnly": "npm run check:release"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-tools": "0.1.3-alpha.2",
+    "@deepseek-ai/schemastery": "^3.18.2",
+    "@deepseek-ai/dsh-llm": "0.1.3-alpha.2"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-system-prompt": "0.1.3-alpha.2"
+  },
+  "bin": {
+    "dsh-document-evidence-setup": "./setup.mjs"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "dsh",
+    "pdf",
+    "document-library",
+    "rag",
+    "citations",
+    "vision"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "tag": "beta"
+  },
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Anduin9527/dsh-document-evidence.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Anduin9527/dsh-document-evidence/issues"
+  },
+  "homepage": "https://github.com/Anduin9527/dsh-document-evidence#readme"
+}
